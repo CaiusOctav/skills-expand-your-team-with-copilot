@@ -552,6 +552,20 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
+      <div class="social-share-container">
+        <span class="social-share-label">Share:</span>
+        <div class="social-share-buttons">
+          <button class="social-share-btn twitter" data-activity="${name}" data-share-type="twitter" title="Share on Twitter">
+            🐦
+          </button>
+          <button class="social-share-btn facebook" data-activity="${name}" data-share-type="facebook" title="Share on Facebook">
+            📘
+          </button>
+          <button class="social-share-btn email" data-activity="${name}" data-share-type="email" title="Share via Email">
+            ✉️
+          </button>
+        </div>
+      </div>
       <div class="activity-card-actions">
         ${
           currentUser
@@ -577,6 +591,17 @@ document.addEventListener("DOMContentLoaded", () => {
       button.addEventListener("click", handleUnregister);
     });
 
+    // Add click handlers for social share buttons
+    const shareButtons = activityCard.querySelectorAll(".social-share-btn");
+    shareButtons.forEach((button) => {
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+        const activityName = button.dataset.activity;
+        const shareType = button.dataset.shareType;
+        handleSocialShare(activityName, details, shareType);
+      });
+    });
+
     // Add click handler for register button (only when authenticated)
     if (currentUser) {
       const registerButton = activityCard.querySelector(".register-button");
@@ -588,6 +613,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     activitiesList.appendChild(activityCard);
+  }
+
+  // Handle social sharing
+  function handleSocialShare(activityName, details, shareType) {
+    // Build the share message
+    const formattedSchedule = formatSchedule(details);
+    const shareText = `Check out ${activityName} at Mergington High School! ${details.description} Schedule: ${formattedSchedule}`;
+    const shareUrl = window.location.href;
+    
+    // Handle different share types
+    switch(shareType) {
+      case 'twitter':
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        window.open(twitterUrl, '_blank', 'width=550,height=420');
+        showMessage('Opening Twitter to share...', 'info');
+        break;
+        
+      case 'facebook':
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        window.open(facebookUrl, '_blank', 'width=550,height=420');
+        showMessage('Opening Facebook to share...', 'info');
+        break;
+        
+      case 'email':
+        const emailSubject = `Check out ${activityName} at Mergington High School`;
+        const emailBody = `Hi,\n\nI wanted to share this activity with you:\n\n${activityName}\n${details.description}\n\nSchedule: ${formattedSchedule}\n\nSpots available: ${details.max_participants - details.participants.length} out of ${details.max_participants}\n\nCheck it out at: ${shareUrl}\n\nBest regards`;
+        const mailtoLink = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        window.location.href = mailtoLink;
+        showMessage('Opening your email client...', 'info');
+        break;
+        
+      default:
+        console.error('Unknown share type:', shareType);
+    }
   }
 
   // Event listeners for search and filter
