@@ -555,13 +555,13 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="social-share-container">
         <span class="social-share-label">Share:</span>
         <div class="social-share-buttons">
-          <button class="social-share-btn twitter" data-activity="${name}" data-share-type="twitter" title="Share on Twitter">
+          <button class="social-share-btn twitter" data-activity="${name}" data-share-type="twitter" title="Share on Twitter" aria-label="Share ${name} on Twitter">
             🐦
           </button>
-          <button class="social-share-btn facebook" data-activity="${name}" data-share-type="facebook" title="Share on Facebook">
+          <button class="social-share-btn facebook" data-activity="${name}" data-share-type="facebook" title="Share on Facebook" aria-label="Share ${name} on Facebook">
             📘
           </button>
-          <button class="social-share-btn email" data-activity="${name}" data-share-type="email" title="Share via Email">
+          <button class="social-share-btn email" data-activity="${name}" data-share-type="email" title="Share via Email" aria-label="Share ${name} via Email">
             ✉️
           </button>
         </div>
@@ -619,21 +619,39 @@ document.addEventListener("DOMContentLoaded", () => {
   function handleSocialShare(activityName, details, shareType) {
     // Build the share message
     const formattedSchedule = formatSchedule(details);
-    const shareText = `Check out ${activityName} at Mergington High School! ${details.description} Schedule: ${formattedSchedule}`;
     const shareUrl = window.location.href;
+    
+    // Build share text with character limit consideration for Twitter (280 chars)
+    let shareText = `Check out ${activityName} at Mergington High School!`;
+    const urlLength = 23; // Twitter shortens URLs to 23 characters
+    const maxDescLength = 280 - shareText.length - urlLength - 20; // Reserve space for schedule
+    
+    if (details.description.length > maxDescLength) {
+      shareText += ` ${details.description.substring(0, maxDescLength - 3)}...`;
+    } else {
+      shareText += ` ${details.description}`;
+    }
     
     // Handle different share types
     switch(shareType) {
       case 'twitter':
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-        window.open(twitterUrl, '_blank', 'width=550,height=420');
-        showMessage('Opening Twitter to share...', 'info');
+        const twitterWindow = window.open(twitterUrl, '_blank', 'width=550,height=420');
+        if (twitterWindow) {
+          showMessage('Opening Twitter to share...', 'info');
+        } else {
+          showMessage('Please allow pop-ups to share on Twitter.', 'warning');
+        }
         break;
         
       case 'facebook':
         const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
-        window.open(facebookUrl, '_blank', 'width=550,height=420');
-        showMessage('Opening Facebook to share...', 'info');
+        const facebookWindow = window.open(facebookUrl, '_blank', 'width=550,height=420');
+        if (facebookWindow) {
+          showMessage('Opening Facebook to share...', 'info');
+        } else {
+          showMessage('Please allow pop-ups to share on Facebook.', 'warning');
+        }
         break;
         
       case 'email':
