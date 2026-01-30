@@ -659,13 +659,34 @@ footer {
   .sidebar-filters {
     width: 100%;
   }
+
+  /* Adjust header controls for mobile */
+  #theme-toggle {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+    right: 10px;
+  }
+
+  #user-controls {
+    right: 55px;
+  }
+
+  .icon-button {
+    padding: 3px 10px;
+    font-size: 0.8rem;
+  }
+
+  .user-icon {
+    font-size: 0.9rem;
+  }
 }
 
 /* User controls in header */
 #user-controls {
   position: absolute;
   top: 10px;
-  right: 15px;
+  right: 65px; /* Move left to make room for theme toggle */
 }
 
 #user-status {
@@ -740,11 +761,4 @@ footer {
 
 #theme-toggle:active {
   transform: scale(0.95);
-}
-
-/* Adjust user controls position when theme toggle is present */
-#user-controls {
-  position: absolute;
-  top: 10px;
-  right: 65px; /* Move left to make room for theme toggle */
 }
