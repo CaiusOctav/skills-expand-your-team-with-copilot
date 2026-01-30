@@ -1,4 +1,38 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Dark mode toggle functionality
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = document.getElementById("theme-icon");
+  
+  // Check for saved theme preference or default to light mode
+  const currentTheme = localStorage.getItem("theme") || "light";
+  const isDarkMode = currentTheme === "dark" || document.documentElement.classList.contains("dark-mode");
+  
+  // Update UI based on current theme
+  if (isDarkMode) {
+    document.body.classList.add("dark-mode");
+    themeIcon.textContent = "☀️";
+    themeToggle.setAttribute("aria-pressed", "true");
+  } else {
+    themeIcon.textContent = "🌙";
+    themeToggle.setAttribute("aria-pressed", "false");
+  }
+  
+  // Toggle dark mode
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    
+    // Update icon, aria-pressed, and save preference
+    if (document.body.classList.contains("dark-mode")) {
+      themeIcon.textContent = "☀️";
+      themeToggle.setAttribute("aria-pressed", "true");
+      localStorage.setItem("theme", "dark");
+    } else {
+      themeIcon.textContent = "🌙";
+      themeToggle.setAttribute("aria-pressed", "false");
+      localStorage.setItem("theme", "light");
+    }
+  });
+
   // DOM elements
   const activitiesList = document.getElementById("activities-list");
   const messageDiv = document.getElementById("message");
